@@ -3,9 +3,30 @@ dependency:
   name: galaxy
 driver:
   name: docker
+lint: |
+  yamllint .
+  ansible-lint --exclude=molecule/default/
+  
 platforms:
-  - name: instance
+  - name: centos
     image: docker.io/pycontribs/centos:8
+    #command: "/sbin/init"
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    capabilities: 
+      - SYS_ADMIN  
+    privileged: true
+    pre_build_image: true
+   # pre_build_image: true
+
+  - name: ubuntu  
+    image: geerlingguy/docker-ubuntu2004-ansible:latest
+    command: /sbin/init
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    capabilities: 
+      - SYS_ADMIN  
+    privileged: true
     pre_build_image: true
 provisioner:
   name: ansible
