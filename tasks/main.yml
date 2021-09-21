@@ -1,2 +1,5 @@
----
-# tasks file for installdocker
+
+  - name: Install test
+    apt:
+      name: vim
+      state: present
