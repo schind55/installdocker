@@ -1,0 +1,36 @@
+   
+---
+name: Molecule Test
+on: [push, pull_request]
+jobs:
+  Test_Molecule:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out repository code
+        uses: actions/checkout@v2
+        
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies
+        run: pip3 install molecule[docker]
+        
+      - name: Install lint
+        run: pip3 install "ansible-lint[core,yamllint]"
+        
+      - name: Install ansible community modules
+        run: ansible-galaxy collection install community.general
+        
+      - name: Install ansible.posix
+        run: ansible-galaxy collection install ansible.posix
+        
+      - name: install dependencies    
+        run: |
+          python3 -m pip install --upgrade pip
+        
+      - name: Molecule test
+        run: |
+          molecule test
