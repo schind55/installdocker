@@ -118,7 +118,7 @@
     become: true
     service: 
       name: docker
-      state: started
+      state: restarted
 
   - name: Verify docker is installed
     become: true
