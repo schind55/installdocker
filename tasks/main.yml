@@ -1,4 +1,3 @@
-  - name: Include playbook
   - name: Install test
     apt:
       name: vim
