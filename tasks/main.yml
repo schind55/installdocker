@@ -1,7 +1,4 @@
   - name: Include playbook
-    include_role:
-    
-
   - name: Install test
     apt:
       name: vim
