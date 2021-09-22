@@ -122,5 +122,5 @@
 
   - name: Verify docker is installed
     become: true
-    raw: rm -rf /var/lib/docker/ && docker run hello-world 
+    raw:  docker run hello-world # rm -rf /var/lib/docker/ &&  davor
     when: ansible_facts['os_family'] == "Debian"
