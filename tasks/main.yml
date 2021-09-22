@@ -49,6 +49,7 @@
       enabled: restarted
     when: ansible_facts['distribution'] == "RedHat"
 
+    # swap is still on, when swapon -s nothing should be dieplayed
   - name: Disable swap Ubuntu
     raw: swapoff -a; sed -i '/swap/d' /etc/fstab
     when: ansible_facts['distribution'] == "Ubuntu"
@@ -65,25 +66,24 @@
     when: ansible_facts['os_family'] == "NotDefined"
 
 
-  - name: ensure net.bridge.bridge-nf-call-ip6tables is set to 1
-    sysctl:
-      name: net.bridge.bridge-nf-call-ip6tables
-      value: 1
-      state: present
+#  - name: ensure net.bridge.bridge-nf-call-ip6tables is set to 1
+#    sysctl:
+#      name: net.bridge.bridge-nf-call-ip6tables
+#      value: 1
+#      state: present
 
-  - name: ensure net.bridge.bridge-nf-call-iptables is set to 1
-    sysctl:
-      name: net.bridge.bridge-nf-call-iptables
-      value: 1
-      state: present
+#  - name: ensure net.bridge.bridge-nf-call-iptables is set to 1
+#    sysctl:
+#      name: net.bridge.bridge-nf-call-iptables
+#      value: 1
+#      state: present
 
-      
   - name: Add the iptables rule to sysctl.conf
     raw: echo "net.bridge.bridge-nf-call-iptables=1" | sudo tee -a /etc/sysctl.conf
   
   - name: Safe settings
     raw: sysctl --system
-
+    
 # Rolle    
 
   - name: Install gpg-agent Debian
@@ -122,5 +122,5 @@
 
   - name: Verify docker is installed
     become: true
-    raw: rm -rf /var/lib/docker/ && docker run hello-world # rm -rf /var/lib/docker/ &&  davor
+    raw: docker run hello-world # rm -rf /var/lib/docker/ &&  davor
     when: ansible_facts['os_family'] == "Debian"
