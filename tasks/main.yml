@@ -52,18 +52,37 @@
     # swap is still on, when swapon -s nothing should be dieplayed
   - name: Disable swap Ubuntu
     raw: swapoff -a; sed -i '/swap/d' /etc/fstab
-    when: ansible_facts['distribution'] == "Ubuntu"
+    when: ansible_facts['distribution'] == "NotDefined"
+
+  - name: Safe whoami
+    raw: whoami
+    register: username
+
+  - name: Print whoami
+    debug:
+      var=username
+
+  - name: Disable swap (if configured).
+    become: true
+    command: swapoff -a
+    #tags: ['skip_ansible_lint']
+
+  - name: Ensure swap file doesn't exist (if configured).
+    file:
+      path: /swapfile
+      state: absent
 
   - name: Disable SWAP RedHat 1/2
+    become: true
     raw: swapoff -a
-    when: ansible_facts['os_family'] == "NotDefined"
+    when: ansible_facts['os_family'] == "Debian"
 
   - name: Disable SWAP RedHat 2/2
     replace:
       path: /etc/fstab
       regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
       replace: '# \1'
-    when: ansible_facts['os_family'] == "NotDefined"
+    when: ansible_facts['os_family'] == "Debian"
 
 
 #  - name: ensure net.bridge.bridge-nf-call-ip6tables is set to 1
