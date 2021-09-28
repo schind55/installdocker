@@ -19,7 +19,7 @@ jobs:
         run: ansible --version
 
       - name: Install test dependencies
-        run: pip3 install molecule[docker] && pip3 install "ansible-lint[core,yamllint]" && python3 -m pip install --upgrade pip
+        run: pip3 install molecule[docker] && pip3 install "ansible-lint[core,yamllint]" && python3 -m pip install --upgrade pip && molecule init role -d ec2 my-role
         
       - name: Install ansible modules
         run: ansible-galaxy collection install community.general && ansible-galaxy collection install ansible.posix

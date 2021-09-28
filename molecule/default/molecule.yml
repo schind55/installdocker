@@ -2,12 +2,24 @@
 dependency:
   name: galaxy
 driver:
-  name: docker
+  name: ec2
 lint: |
   yamllint .
   ansible-lint --exclude=molecule/default/
   
+
+#
+#
+#  key_name = "my_key"
+ # ami           = "ami-05f7491af5eef733a"
+#  instance_type = "t2.micro"
+
 platforms:
+  - name: instance
+    image: ami-05f7491af5eef733a
+    instance_type: t2.micro
+    vpc_subnet_id: subnet-03f0483cabb6ef976
+
   - name: centos
     image: docker.io/pycontribs/centos:8
     #command: "/sbin/init"
