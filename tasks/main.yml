@@ -9,6 +9,11 @@
     raw: apt-get update
     when: ansible_facts['os_family'] == "Debian"
 
+  - name: Update
+    apt:
+      name: "*"
+      state: latest
+
   - name: Install ufw
     apt:
       name: ufw
