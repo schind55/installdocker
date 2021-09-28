@@ -19,7 +19,7 @@ jobs:
         run: ansible --version
 
       - name: Install test dependencies
-        run: pip3 install molecule[aws] && pip3 install "ansible-lint[core,yamllint]" && python3 -m pip install --upgrade pip && # molecule init role -d ec2 my-role
+        run: pip3 install molecule[aws] && pip3 install "ansible-lint[core,yamllint]" && python3 -m pip install --upgrade pip # &&  molecule init role -d ec2 my-role
         
       - name: Config molecule for aws
         run: export AWS_REGION=eu-central-1 && export AWS_ACCESS_KEY_ID= ${{ secrets.AWSACCESSKEYID }} && export AWS_ACCESS_KEY= ${{ secrets.AWSACCESSKEY }}
