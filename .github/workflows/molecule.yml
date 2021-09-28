@@ -21,6 +21,9 @@ jobs:
       - name: Install test dependencies
         run: pip3 install molecule[docker] && pip3 install "ansible-lint[core,yamllint]" && python3 -m pip install --upgrade pip && molecule init role -d ec2 my-role
         
+      - name: Config molecule for aws
+        run: export AWS_REGION=eu-central-1
+          
       - name: Install ansible modules
         run: ansible-galaxy collection install community.general && ansible-galaxy collection install ansible.posix
         
