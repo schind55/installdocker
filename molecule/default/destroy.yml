@@ -19,6 +19,7 @@
     - name: Destroy molecule instance(s)
       ec2:
         state: absent
+        region: eu-central-1
         instance_ids: "{{ item.instance_ids }}"
       register: server
       with_items: "{{ instance_conf }}"

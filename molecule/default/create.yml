@@ -24,9 +24,9 @@
         from_port: 0
         to_port: 0
         cidr_ip: '0.0.0.0/0'
-
     key_pair_name: molecule_key
-    key_pair_path: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}/ssh_key"
+    key_pair_path: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}" # {{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}/ssh_keys
+    # ToDo: normaler pfad home/thinkpad/ssh_keys noch nicht angepasst für remote
   tasks:
     - name: Find the vpc for the subnet
       ec2_vpc_subnet_info:
@@ -48,6 +48,14 @@
         path: "{{ key_pair_path }}"
       register: key_pair_local
 
+    - name: Print key path
+      debug:
+        var: lookup('env', 'key_pair_local')
+
+    - name: Print presence of local key
+      debug: 
+        var: key_pair_local
+
     - name: Delete remote key pair
       ec2_key:
         name: "{{ key_pair_name }}"
@@ -58,6 +66,10 @@
       ec2_key:
         name: "{{ key_pair_name }}"
       register: key_pair
+
+    - name: Print key pair
+      debug:
+        var: key_pair
 
     - name: Persist the key pair
       copy:
@@ -77,12 +89,13 @@
 
     - name: Create molecule instance(s)
       ec2:
-        key_name: "my_key"
+        key_name: "molecule_key.pem"
         image: "{{ item.image
           if item.image is defined
           else (ami_info.results[index].images | sort(attribute='creation_date', reverse=True))[0].image_id }}"
         instance_type: "{{ item.instance_type }}"
         vpc_subnet_id: "{{ item.vpc_subnet_id }}"
+        region: eu-central-1
         group: "{{ security_group_name }}"
         instance_tags: "{{ item.instance_tags | combine({'instance': item.name})
           if item.instance_tags is defined
@@ -112,11 +125,11 @@
     - name: Populate instance config dict
       set_fact:
         instance_conf_dict: {
-          'instance': "{{ item.instances[0].tags.instance }}",
-          'address': "{{ item.instances[0].public_ip }}",
+          'instance': "{{ item.tagged_instances[0].tags.instance }}",
+          'address': "{{ item.tagged_instances[0].public_ip }}",
           'user': "{{ ssh_user }}",
           'port': "{{ ssh_port }}",
-          'identity_file': "/home/thinkpad/Downloads/molecule_key.pem",
+          'identity_file': "molecule_key.pem",
           'instance_ids': "{{ item.instance_ids }}", }
       with_items: "{{ ec2_jobs.results }}"
       register: instance_config_dict
@@ -141,6 +154,10 @@
         delay: 10
         timeout: 320
       with_items: "{{ lookup('file', molecule_instance_config) }}"
+
+    - name: Print key file
+      debug:
+        var: lookup('file', molecule_instance_config)
 
     - name: Wait for boot process to finish
       pause:
