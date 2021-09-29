@@ -25,7 +25,7 @@
         to_port: 0
         cidr_ip: '0.0.0.0/0'
     key_pair_name: molecule_key
-    key_pair_path: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}" # {{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}/ssh_keys
+    key_pair_path: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}/ssh_key" # {{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}/ssh_keys
     # ToDo: normaler pfad home/thinkpad/ssh_keys noch nicht angepasst für remote
   tasks:
     - name: Find the vpc for the subnet
