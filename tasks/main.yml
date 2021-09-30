@@ -4,35 +4,12 @@
     ansible.builtin.debug:
       var: ansible_facts['distribution']
 
-  - name: Update packages Debian
-    become: true
-    raw: apt-get update
-    when: ansible_facts['os_family'] == "Debian"
-
-  - name: Update
-    apt:
-      name: "*"
-      state: latest
-
-  - name: Install ufw
-    apt:
-      name: ufw
-      state: present
-    when: ansible_facts['os_family'] == "Debian"
-
-
   - name: Disable firewall for centos
     become: true
     ansible.builtin.service:
       name: firewalld
       enabled: false
     when: ansible_facts['distribution'] == "CentOS"
-
-  - name: Register firewall for ubuntu
-    ufw:
-      state: disabled
-    when: ansible_facts['distribution'] == "Ubuntu"
-
 
   - name: Install SELinux-policy for RedHat
     become: true
@@ -54,39 +31,11 @@
       enabled: restarted
     when: ansible_facts['distribution'] == "RedHat"
 
-    # swap is still on, when swapon -s nothing should be dieplayed
-  - name: Disable swap Ubuntu
-    raw: swapoff -a; sed -i '/swap/d' /etc/fstab
-    when: ansible_facts['distribution'] == "NotDefined"
-
-  - name: Safe whoami
-    raw: whoami
-    register: username
-
-  - name: Print whoami
-    debug:
-      var=username
-
-  - name: Disable swap (if configured).
-    command: swapoff -a
-    #tags: ['skip_ansible_lint']
-
   - name: Ensure swap file doesn't exist (if configured).
     file:
       path: /swapfile
       state: absent
 
-  - name: Disable SWAP RedHat 1/2
-    become: true
-    raw: swapoff -a
-    when: ansible_facts['os_family'] == "Debian"
-
-  - name: Disable SWAP RedHat 2/2
-    replace:
-      path: /etc/fstab
-      regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
-      replace: '# \1'
-    when: ansible_facts['os_family'] == "Debian"
 
 
 #  - name: ensure net.bridge.bridge-nf-call-ip6tables is set to 1
