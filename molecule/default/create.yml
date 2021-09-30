@@ -5,7 +5,6 @@
   gather_facts: false
   no_log: "{{ molecule_no_log }}"
   vars:
-    ssh_user: ubuntu
     ssh_port: 22
 
     security_group_name: molecule
@@ -87,14 +86,22 @@
         vpc_subnet_id: "{{ item.vpc_subnet_id }}"
         group: "{{ security_group_name }}"
         region: eu-central-1
-        instance_tags: "{{ item.instance_tags | combine({'instance': item.name})
-          if item.instance_tags is defined
-          else {'instance': item.name} }}"
+        instance_tags: 
+          #instance: item.name
+          instance: "{{item.name}}"
+          #"{{ item.instance_tags | combine({'instance': item.name})
+          #if item.instance_tags is defined
+          #else {'instance': item.name} }}"
+          #"{{ item.ssh_user }}"
+          ssh_user: "{{item.ssh_user}}" #"{{ item.instance_tags | combine({'instance': item.ssh_user})
+          #if item.instance_tags is defined
+          #else {'instance': item.ssh_user} }}"
         wait: true
         assign_public_ip: true
         exact_count: 1
         count_tag:
           instance: "{{ item.name }}"
+          #user: "{{ item.ssh_user }}"
       register: server
       loop: "{{ molecule_yml.platforms }}"
       loop_control:
@@ -112,17 +119,19 @@
 
     # Mandatory configuration for Molecule to function.
 
+
     - name: Populate instance config dict
       set_fact:
         instance_conf_dict: {
           'instance': "{{ item.tagged_instances[0].tags.instance }}",
           'address': "{{ item.tagged_instances[0].public_ip }}",
-          'user': "{{ ssh_user }}",
+          'user': "{{ item.tagged_instances[0].tags.ssh_user}}",
           'port': "{{ ssh_port }}",
           'identity_file': "{{ key_pair_path }}",
           'instance_ids': "{{ item.instance_ids }}", }
       with_items: "{{ ec2_jobs.results }}"
       register: instance_config_dict
+      #loop: "{{ molecule_yml.platforms }}"
       when: server.changed | bool
 
     - name: Convert instance config dict to a list

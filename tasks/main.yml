@@ -4,61 +4,19 @@
     ansible.builtin.debug:
       var: ansible_facts['distribution']
 
-  - name: Disable firewall for centos
-    become: true
-    ansible.builtin.service:
-      name: firewalld
-      enabled: false
-    when: ansible_facts['distribution'] == "CentOS"
-
-  - name: Install SELinux-policy for RedHat
-    become: true
-    yum:
-      name: selinux-policy-doc.noarch
-      state: present
-    when: ansible_facts['os_family'] == "RedHat"
-
-  - name: Put SELinux in permissive mode centos
-    selinux:
-      #policy: targeted
-      state: disabled
-    when: ansible_facts['distribution'] == "CentOS"
-
-  - name: Rebbot for change to take affect RedHat
-    become: true
-    ansible.builtin.service:
-      name: selinux
-      enabled: restarted
-    when: ansible_facts['distribution'] == "RedHat"
+  - name: print OS family
+    ansible.builtin.debug:
+      var: ansible_facts['os_family']    
 
   - name: Ensure swap file doesn't exist (if configured).
     file:
       path: /swapfile
       state: absent
-
-
-
-#  - name: ensure net.bridge.bridge-nf-call-ip6tables is set to 1
-#    sysctl:
-#      name: net.bridge.bridge-nf-call-ip6tables
-#      value: 1
-#      state: present
-
-#  - name: ensure net.bridge.bridge-nf-call-iptables is set to 1
-#    sysctl:
-#      name: net.bridge.bridge-nf-call-iptables
-#      value: 1
-#      state: present
-
-  - name: Add the iptables rule to sysctl.conf
-    raw: echo "net.bridge.bridge-nf-call-iptables=1" | sudo tee -a /etc/sysctl.conf
-  
-  - name: Safe settings
-    raw: sysctl --system
     
 # Rolle    
 
   - name: Install gpg-agent Debian
+    become: true
     apt:
       name: gpg-agent
       state: present
