@@ -22,27 +22,54 @@
       state: present
     when: ansible_facts['os_family'] == "Debian"
 
-  - name: Add Docker apt key
+  - name: Add Docker apt key debian
     become: true
     apt_key:
       url: https://download.docker.com/linux/ubuntu/gpg
       id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
       state: present
-    when: ansible_facts['distribution'] == "Ubuntu"
+    when: ansible_facts['distribution'] == "Debian"
 
-  - name: Add docker apt repo
+  - name: Add docker apt repo Debian
+    become: true
     apt_repository:
       repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ansible_lsb.codename}} stable"
       update_cache: yes
     when: ansible_facts['os_family'] == "Debian"
 
-  - name: Install Docker apt package
+  - name: Install Docker package Debian
     become: true
     apt:
       pkg: docker-ce
       state: latest
-      update_cache: yes    
+      update_cache: yes
     when: ansible_facts['os_family'] == "Debian"
+
+  - name: Install Docker redhat
+    become: true
+    package:
+      name: docker
+      state: present
+    notify: restart docker
+    when: ansible_facts['os_family'] == "RedHat"
+
+  - name: Ensure Docker is started and enabled at boot redhat
+    become: true
+    service:
+      name: docker
+      state: "{{ docker_service_state }}"
+      enabled: "{{ docker_service_enabled }}"
+      when: ansible_facts['os_family'] == "RedHat"
+
+  #- name: Install Docker package RedHat
+  #  become: true
+  #  yum:
+  #    name:
+  #      - docker-ce
+  #      - docker-ce-cli
+  #      - containerd.io
+  #    state: present
+  #  when: ansible_facts['os_family'] == "RedHat"
 
   - name: Start docker
     become: true

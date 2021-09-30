@@ -4,17 +4,17 @@ dependency:
 driver:
   name: ec2
 platforms:
-  - name: Ubuntu 20
+  - name: ubuntu_20
     image: ami-05f7491af5eef733a
     ssh_user: ubuntu
     instance_type: t2.micro
     vpc_subnet_id: subnet-03f0483cabb6ef976
-  - name: Amazon Linux
+  - name: aws_linux
     image: ami-07df274a488ca9195
     ssh_user: ec2-user
     instance_type: t2.micro
     vpc_subnet_id: subnet-03f0483cabb6ef976
-  - name: RedHat 8
+  - name: redhat_8
     image: ami-06ec8443c2a35b0ba
     ssh_user: ec2-user 
     instance_type: t2.micro
